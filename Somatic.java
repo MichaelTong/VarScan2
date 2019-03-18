@@ -36,7 +36,7 @@ public class Somatic {
 	{
         ArrayList<Long> read_lats = new ArrayList<Long>();
         ArrayList<Long> compute_lats = new ArrayList<Long>();
-        Long cstart, cend, iostart, ioend, elapsed;
+        Long cstart, cend, iostart, ioend, c_elapsed, io_elapsed;
 		String usage = "USAGE: java -jar VarScan.jar somatic [normal-tumor.mpileup] [Opt: output] OPTIONS\n" +
 			"\tnormal-tumor.pileup - The SAMtools mpileup file for Normal and Tumor BAMs\n" +
 			"\toutput - Output base name for SNP and indel output\n" +
@@ -227,17 +227,17 @@ public class Somatic {
 		}
 
 		// Statistics counters //
-		Long tumorPositions = 0;
-		Long sharedPositions = 0;
-		Long comparedPositions = 0;
-		Long calledReference = 0;
-		Long indelFilter = 0;
-		Long strandFilter = 0;
-		Long calledGermline = 0;
-		Long calledLOH = 0;
-		Long calledSomatic = 0;
-		Long calledUnknown = 0;
-		Long calledVariant = 0;
+		Long tumorPositions = 0L;
+		Long sharedPositions = 0L;
+		Long comparedPositions = 0L;
+		Long calledReference = 0L;
+		Long indelFilter = 0L;
+		Long strandFilter = 0L;
+		Long calledGermline = 0L;
+		Long calledLOH = 0L;
+		Long calledSomatic = 0L;
+		Long calledUnknown = 0L;
+		Long calledVariant = 0L;
 
 
 		try
@@ -341,11 +341,11 @@ public class Somatic {
 	    		int numParsingExceptions = 0;
 
 //	    		while ((line = in.readLine()) != null)
-                cstart = 0;
+                cstart = 0L;
                 while (true)
 	    		{
                     cend = System.nanoTime();
-                    if (cstart != 0) {
+                    if (cstart != 0L) {
                         c_elapsed = cend - cstart;
                         compute_lats.add(c_elapsed);
                     }
@@ -933,17 +933,17 @@ public class Somatic {
 
 
 		// Statistics counters //
-		Long tumorPositions = 0;
-		Long sharedPositions = 0;
-		Long comparedPositions = 0;
-		Long calledReference = 0;
-		Long indelFilter = 0;
-		Long strandFilter = 0;
-		Long calledGermline = 0;
-		Long calledLOH = 0;
-		Long calledSomatic = 0;
-		Long calledUnknown = 0;
-		Long calledVariant = 0;
+		Long tumorPositions = 0L;
+		Long sharedPositions = 0L;
+		Long comparedPositions = 0L;
+		Long calledReference = 0L;
+		Long indelFilter = 0L;
+		Long strandFilter = 0L;
+		Long calledGermline = 0L;
+		Long calledLOH = 0L;
+		Long calledSomatic = 0L;
+		Long calledUnknown = 0L;
+		Long calledVariant = 0L;
 		DecimalFormat pvalueFormat = new DecimalFormat("0.####E0");
 
 		try
