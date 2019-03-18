@@ -309,8 +309,8 @@ public class Somatic {
 				}
 				outSnp = new PrintStream( new FileOutputStream(outputSnp) );
 				outIndel = new PrintStream( new FileOutputStream(outputIndel) );
-                outReadLats = new BufferedWriter( new FileWriter(outputReadLats), 128*1024 );
-                outComputeLats = new BufferedWriter( new FileWriter(outputComputeLats), 128*1024 );
+                outReadLats = new BufferedWriter( new FileWriter(outputReadLats), 20*1024*1024 );
+                outComputeLats = new BufferedWriter( new FileWriter(outputComputeLats), 20*1024*1024 );
 
 				if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
 				{
