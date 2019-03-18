@@ -297,8 +297,8 @@ public class Somatic {
 				PrintStream outValidation = null; // declare a print stream object for both for validation
 				PrintStream outCopyNumber = null; // declare a print stream object for both for validation
 
-                PrintStream outComputeLats = null;
-                PrintStream outReadLats = null;
+                BufferedWriter outComputeLats = null;
+                BufferedWriter outReadLats = null;
 
 				if(params.containsKey("output-vcf"))
 				{
@@ -309,8 +309,8 @@ public class Somatic {
 				}
 				outSnp = new PrintStream( new FileOutputStream(outputSnp) );
 				outIndel = new PrintStream( new FileOutputStream(outputIndel) );
-                outReadLats = new PrintStream( new FileOutputStream(outputReadLats) );
-                outComputeLats = new PrintStream( new FileOutputStream(outputComputeLats) );
+                outReadLats = new BufferedWriter( new FileWriter(outputReadLats), 128*1024 );
+                outComputeLats = new BufferedWriter( new FileWriter(outputComputeLats), 128*1024 );
 
 				if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
 				{
@@ -704,12 +704,15 @@ public class Somatic {
 	    		    }
 	    		}
 
+                iostart = System.nanoTime();
                 for (Double lat:read_lats) {
                     outReadLats.println(lat);
                 }
                 for (Double lat:compute_lats) {
                     outComputeLats.println(lat);
                 }
+                ioend = System.nanoTime();
+                io_elapsed = ioend - iostart;
 	    		// Close input/output files //
 	    		in.close();
 			    outSnp.close();
@@ -728,6 +731,8 @@ public class Somatic {
 			    System.err.println(calledSomatic + " were called Somatic");
 			    System.err.println(calledUnknown + " were called Unknown");
 			    System.err.println(calledVariant + " were called Variant");
+                
+                System.err.println("\nMetrics written in " + io_elapsed/1000.0 + " us.");
 	    	}
 	    	else
 	    	{
