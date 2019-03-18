@@ -34,6 +34,8 @@ public class Somatic {
 
 	public Somatic(String[] args, boolean isMpileup)
 	{
+        ArrayList<long> read_lats = new ArrayList<long>();
+        ArrayList<long> compute_lats = new ArrayList<long>();
 		String usage = "USAGE: java -jar VarScan.jar somatic [normal-tumor.mpileup] [Opt: output] OPTIONS\n" +
 			"\tnormal-tumor.pileup - The SAMtools mpileup file for Normal and Tumor BAMs\n" +
 			"\toutput - Output base name for SNP and indel output\n" +
@@ -87,12 +89,16 @@ public class Somatic {
 		String outputSnp = "";
 		String outputIndel = "";
 		String outputCopy = "";
+        String outputComputeLats = "";
+        String outputReadLats = "";
 
 		if(args.length >= 3 && !args[2].startsWith("-"))
 		{
 			outputName = args[2];
 			outputSnp = outputName + ".snp";
 			outputIndel = outputName + ".indel";
+            outputReadLats = outputName + ".read_lats.dat";
+            outputComputeLats = outputName + ".compute_lats.dat";
 		}
 
 //		Set parameter defaults //
@@ -289,6 +295,9 @@ public class Somatic {
 		 	 	PrintStream outValidation = null; // declare a print stream object for both for validation
 		 	 	PrintStream outCopyNumber = null; // declare a print stream object for both for validation
 
+                PrintStream outComputeLats = null;
+                PrintStream outReadLats = null;
+
 		 	 	if(params.containsKey("output-vcf"))
 		 	 	{
 		 	 		if(!outputSnp.contains(".vcf"))
@@ -298,6 +307,8 @@ public class Somatic {
 		 	 	}
 		 		outSnp = new PrintStream( new FileOutputStream(outputSnp) );
 		 		outIndel = new PrintStream( new FileOutputStream(outputIndel) );
+                outReadLats = new PrintStream( new FileOutputStream(outputReadLats) );
+                outComputeLats = new PrintStream( new FileOutputStream(outputComputeLats) );
 
 		 		if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
 		 		{
@@ -328,11 +339,25 @@ public class Somatic {
 	    		System.err.println("Reading mpileup input...");
 	    		int numParsingExceptions = 0;
 
-	    		while ((line = in.readLine()) != null)
+//	    		while ((line = in.readLine()) != null)
+                long cstart = 0;
+                while (true)
 	    		{
+                    long cend = System.nanoTime();
+                    if (cstart != 0) {
+                        long c_elapsed = cend - cstart;
+                        compute_lats.add(c_elapsed);
+                    }
 
+                    long iostart = System.nanoTime()
+                    line = in.readLine();
+                    long ioend = System.nanoTime();
+                    if (line == null)
+                        break;
+                    long io_elapsed = ioend - iostart;
+                    read_lats.add(io_elapsed);
 	    			// Begin try-catch for line parsing //
-
+                    long cstart = System.nanoTime();
 	    			try
 	    			{
 	    				String[] lineContents = line.split("\t", -1);
@@ -677,10 +702,18 @@ public class Somatic {
 	    		    }
 	    		}
 
+                for (long lat:read_lats) {
+                    outReadLats.println("%ld", lat);
+                }
+                for (long lat:compute_lats) {
+                    outComputeLats.println("%ld", lat);
+                }
 	    		// Close input/output files //
 	    		in.close();
 			    outSnp.close();
 			    outIndel.close();
+                outReadLats.close();
+                outComputeLats.close();
 
 			    System.err.println(sharedPositions + " positions in mpileup file"); //stats.get("sharedPositions")
 			    System.err.println(comparedPositions + " had sufficient coverage for comparison"); //stats.get("comparedPositions")
