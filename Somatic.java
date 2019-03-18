@@ -34,8 +34,9 @@ public class Somatic {
 
 	public Somatic(String[] args, boolean isMpileup)
 	{
-        ArrayList<long> read_lats = new ArrayList<long>();
-        ArrayList<long> compute_lats = new ArrayList<long>();
+        ArrayList<Long> read_lats = new ArrayList<Long>();
+        ArrayList<Long> compute_lats = new ArrayList<Long>();
+        Long cstart, cend, iostart, ioend, elapsed;
 		String usage = "USAGE: java -jar VarScan.jar somatic [normal-tumor.mpileup] [Opt: output] OPTIONS\n" +
 			"\tnormal-tumor.pileup - The SAMtools mpileup file for Normal and Tumor BAMs\n" +
 			"\toutput - Output base name for SNP and indel output\n" +
@@ -221,22 +222,22 @@ public class Somatic {
 		if(outputSnp.length() == 0 || outputIndel.length() == 0)
 		{
 			System.err.println("Please provide an output basename or SNP/indel output files!");
-			 System.err.println(usage);
-			 System.exit(1);
+			System.err.println(usage);
+			System.exit(1);
 		}
 
 		// Statistics counters //
-		long tumorPositions = 0;
-		long sharedPositions = 0;
-		long comparedPositions = 0;
-		long calledReference = 0;
-		long indelFilter = 0;
-		long strandFilter = 0;
-		long calledGermline = 0;
-		long calledLOH = 0;
-		long calledSomatic = 0;
-		long calledUnknown = 0;
-		long calledVariant = 0;
+		Long tumorPositions = 0;
+		Long sharedPositions = 0;
+		Long comparedPositions = 0;
+		Long calledReference = 0;
+		Long indelFilter = 0;
+		Long strandFilter = 0;
+		Long calledGermline = 0;
+		Long calledLOH = 0;
+		Long calledSomatic = 0;
+		Long calledUnknown = 0;
+		Long calledVariant = 0;
 
 
 		try
@@ -290,74 +291,74 @@ public class Somatic {
 			    int posTumor = 0;
 
 				// Declare output file //
-		 	 	PrintStream outSnp = null; // declare a print stream object for SNPs
-		 	 	PrintStream outIndel = null; // declare a print stream object for Indels
-		 	 	PrintStream outValidation = null; // declare a print stream object for both for validation
-		 	 	PrintStream outCopyNumber = null; // declare a print stream object for both for validation
+				PrintStream outSnp = null; // declare a print stream object for SNPs
+				PrintStream outIndel = null; // declare a print stream object for Indels
+				PrintStream outValidation = null; // declare a print stream object for both for validation
+				PrintStream outCopyNumber = null; // declare a print stream object for both for validation
 
                 PrintStream outComputeLats = null;
                 PrintStream outReadLats = null;
 
-		 	 	if(params.containsKey("output-vcf"))
-		 	 	{
-		 	 		if(!outputSnp.contains(".vcf"))
-		 	 			outputSnp += ".vcf";
-		 	 		if(!outputIndel.contains(".vcf"))
-		 	 			outputIndel += ".vcf";
-		 	 	}
-		 		outSnp = new PrintStream( new FileOutputStream(outputSnp) );
-		 		outIndel = new PrintStream( new FileOutputStream(outputIndel) );
+				if(params.containsKey("output-vcf"))
+				{
+					if(!outputSnp.contains(".vcf"))
+						outputSnp += ".vcf";
+					if(!outputIndel.contains(".vcf"))
+						outputIndel += ".vcf";
+				}
+				outSnp = new PrintStream( new FileOutputStream(outputSnp) );
+				outIndel = new PrintStream( new FileOutputStream(outputIndel) );
                 outReadLats = new PrintStream( new FileOutputStream(outputReadLats) );
                 outComputeLats = new PrintStream( new FileOutputStream(outputComputeLats) );
 
-		 		if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
-		 		{
-		 			outSnp.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus\tnormal_reads1_plus\tnormal_reads1_minus\tnormal_reads2_plus\tnormal_reads2_minus");
-		 			outIndel.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus\tnormal_reads1_plus\tnormal_reads1_minus\tnormal_reads2_plus\tnormal_reads2_minus");
-		 		}
+				if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
+				{
+					outSnp.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus\tnormal_reads1_plus\tnormal_reads1_minus\tnormal_reads2_plus\tnormal_reads2_minus");
+					outIndel.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus\tnormal_reads1_plus\tnormal_reads1_minus\tnormal_reads2_plus\tnormal_reads2_minus");
+				}
 
-		 		if(params.containsKey("output-vcf"))
+				if(params.containsKey("output-vcf"))
 				{
 					// Output VCF Header //
 					outSnp.println(vcfHeader);
 					outIndel.println(vcfHeader);
 				}
 
-		 		if(params.containsKey("validation"))
-		 		{
-			 		outValidation = new PrintStream( new FileOutputStream(outputName + ".validation") );
-			 		if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
-			 			outValidation.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus");
-			 		if(params.containsKey("output-vcf"))
+				if(params.containsKey("validation"))
+				{
+					outValidation = new PrintStream( new FileOutputStream(outputName + ".validation") );
+					if(!params.containsKey("no-headers") && !params.containsKey("output-vcf"))
+						outValidation.println("chrom\tposition\tref\tvar\tnormal_reads1\tnormal_reads2\tnormal_var_freq\tnormal_gt\ttumor_reads1\ttumor_reads2\ttumor_var_freq\ttumor_gt\tsomatic_status\tvariant_p_value\tsomatic_p_value\ttumor_reads1_plus\ttumor_reads1_minus\ttumor_reads2_plus\ttumor_reads2_minus");
+					if(params.containsKey("output-vcf"))
 					{
 						// Output VCF Header //
 						outValidation.println(vcfHeader);
 					}
-		 		}
+				}
 
 	    		// Parse the infile line by line //
 	    		System.err.println("Reading mpileup input...");
 	    		int numParsingExceptions = 0;
 
 //	    		while ((line = in.readLine()) != null)
-                long cstart = 0;
+                cstart = 0;
                 while (true)
 	    		{
-                    long cend = System.nanoTime();
+                    cend = System.nanoTime();
                     if (cstart != 0) {
-                        long c_elapsed = cend - cstart;
+                        c_elapsed = cend - cstart;
                         compute_lats.add(c_elapsed);
                     }
 
-                    long iostart = System.nanoTime()
+                    iostart = System.nanoTime();
                     line = in.readLine();
-                    long ioend = System.nanoTime();
+                    ioend = System.nanoTime();
                     if (line == null)
                         break;
-                    long io_elapsed = ioend - iostart;
+                    io_elapsed = ioend - iostart;
                     read_lats.add(io_elapsed);
 	    			// Begin try-catch for line parsing //
-                    long cstart = System.nanoTime();
+                    cstart = System.nanoTime();
 	    			try
 	    			{
 	    				String[] lineContents = line.split("\t", -1);
@@ -702,11 +703,11 @@ public class Somatic {
 	    		    }
 	    		}
 
-                for (long lat:read_lats) {
-                    outReadLats.println("%ld", lat);
+                for (Long lat:read_lats) {
+                    outReadLats.println(lat);
                 }
-                for (long lat:compute_lats) {
-                    outComputeLats.println("%ld", lat);
+                for (Long lat:compute_lats) {
+                    outComputeLats.println(lat);
                 }
 	    		// Close input/output files //
 	    		in.close();
@@ -789,8 +790,8 @@ public class Somatic {
 
 		if(args.length < 3)
 		{
-			 System.err.println(usage);
-			 System.exit(1);
+			System.err.println(usage);
+			System.exit(1);
 		}
 
 		// Get the required arguments //
@@ -932,17 +933,17 @@ public class Somatic {
 
 
 		// Statistics counters //
-		long tumorPositions = 0;
-		long sharedPositions = 0;
-		long comparedPositions = 0;
-		long calledReference = 0;
-		long indelFilter = 0;
-		long strandFilter = 0;
-		long calledGermline = 0;
-		long calledLOH = 0;
-		long calledSomatic = 0;
-		long calledUnknown = 0;
-		long calledVariant = 0;
+		Long tumorPositions = 0;
+		Long sharedPositions = 0;
+		Long comparedPositions = 0;
+		Long calledReference = 0;
+		Long indelFilter = 0;
+		Long strandFilter = 0;
+		Long calledGermline = 0;
+		Long calledLOH = 0;
+		Long calledSomatic = 0;
+		Long calledUnknown = 0;
+		Long calledVariant = 0;
 		DecimalFormat pvalueFormat = new DecimalFormat("0.####E0");
 
 		try
