@@ -706,10 +706,10 @@ public class Somatic {
 
                 iostart = System.nanoTime();
                 for (Double lat:read_lats) {
-                    outReadLats.println(lat);
+                    outReadLats.write(lat+"\n");
                 }
                 for (Double lat:compute_lats) {
-                    outComputeLats.println(lat);
+                    outComputeLats.write(lat+"\n");
                 }
                 ioend = System.nanoTime();
                 io_elapsed = ioend - iostart;
