@@ -712,7 +712,7 @@ public class Somatic {
                     outComputeLats.write(lat+"\n");
                 }
                 ioend = System.nanoTime();
-                io_elapsed = ioend - iostart;
+                io_elapsed = (ioend - iostart)/1000.0;
 	    		// Close input/output files //
 	    		in.close();
 			    outSnp.close();
@@ -732,7 +732,7 @@ public class Somatic {
 			    System.err.println(calledUnknown + " were called Unknown");
 			    System.err.println(calledVariant + " were called Variant");
                 
-                System.err.println("\nMetrics written in " + io_elapsed/1000.0 + " us.");
+                System.err.println("\nMetrics written in " + io_elapsed + " us.");
 	    	}
 	    	else
 	    	{
